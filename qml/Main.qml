@@ -117,13 +117,16 @@ Window {
       anchors.topMargin: 2
       anchors.leftMargin: 2
       anchors.rightMargin: 2
-      height: Math.max(26, titleControls.implicitHeight + Theme.space(4))
+      height: Math.max(32, titleControls.implicitHeight + Theme.space(10))
 
       MouseArea {
         anchors.fill: parent
         onPressed: window.startSystemMove()
       }
 
+      // The title sits a little lower than the window controls, with a little
+      // air above and to the left, so it reads as a title rather than a label
+      // pinned to the corner.
       Text {
         textFormat: Text.PlainText
         text: "Rain Log"
@@ -132,15 +135,17 @@ Window {
         font.pixelSize: Theme.font.title
         font.bold: true
         anchors.left: parent.left
-        anchors.leftMargin: Theme.spacing.popupPadding
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.leftMargin: Theme.space(18)
+        anchors.top: parent.top
+        anchors.topMargin: Theme.space(8)
       }
 
       Row {
         id: titleControls
+        anchors.top: parent.top
+        anchors.topMargin: Theme.space(2)
         anchors.right: parent.right
         anchors.rightMargin: Theme.space(4)
-        anchors.verticalCenter: parent.verticalCenter
         spacing: Theme.space(2)
 
         Button {
