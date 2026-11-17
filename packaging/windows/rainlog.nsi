@@ -35,8 +35,8 @@ VIAddVersionKey "ProductVersion" "${VERSION}"
 VIAddVersionKey "LegalCopyright" "Copyright (c) 2026 Captain Reginald. Licensed under GPLv3"
 
 !define MUI_ABORTWARNING
-!define MUI_ICON "packaging\rainlog.ico"
-!define MUI_UNICON "packaging\rainlog.ico"
+!define MUI_ICON "..\rainlog.ico"
+!define MUI_UNICON "..\rainlog.ico"
 !define MUI_FINISHPAGE_RUN "$INSTDIR\rainlog.exe"
 !define MUI_FINISHPAGE_RUN_TEXT "Launch Rain Log"
 
