@@ -176,33 +176,12 @@ Item {
       width: parent.width
       spacing: Theme.space(8)
 
-      Text {
-        textFormat: Text.PlainText
-        text: "Rain Log"
-        color: Theme.foreground
-        font.family: Theme.font.family
-        font.pixelSize: Theme.font.title
-        font.bold: true
-        Layout.alignment: Qt.AlignVCenter
-      }
-
-      Button {
-        text: "⚙"
-        tooltipText: "Settings"
-        Layout.alignment: Qt.AlignVCenter
-        onClicked: {
-          root.historyMode = false
-          root.settingsMode = !root.settingsMode
-        }
-      }
-
       Item { Layout.fillWidth: true }
 
       Button {
         text: "Edit History"
         visible: !root.historyMode && !root.settingsMode
-        // Sit the label flush with the content edge so the gap after it
-        // matches the padding before the title.
+        // Sit the label flush with the content edge.
         horizontalPadding: 0
         Layout.alignment: Qt.AlignVCenter
         onClicked: {

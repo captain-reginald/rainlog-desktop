@@ -107,8 +107,8 @@ Window {
     border.width: 2
     border.color: Theme.popupsBorder
 
-    // Window controls sit above the card header, the way a regular title bar
-    // does. The empty part of the strip drags the window.
+    // A standard title strip: app name on the left, settings and window
+    // controls on the right. The empty part drags the window.
     Item {
       id: titleBar
       anchors.top: parent.top
@@ -117,19 +117,44 @@ Window {
       anchors.topMargin: 2
       anchors.leftMargin: 2
       anchors.rightMargin: 2
-      height: Math.max(26, windowControls.implicitHeight + Theme.space(4))
+      height: Math.max(26, titleControls.implicitHeight + Theme.space(4))
 
       MouseArea {
         anchors.fill: parent
         onPressed: window.startSystemMove()
       }
 
+      Text {
+        textFormat: Text.PlainText
+        text: "Rain Log"
+        color: Theme.foreground
+        font.family: Theme.font.family
+        font.pixelSize: Theme.font.title
+        font.bold: true
+        anchors.left: parent.left
+        anchors.leftMargin: Theme.spacing.popupPadding
+        anchors.verticalCenter: parent.verticalCenter
+      }
+
       Row {
-        id: windowControls
+        id: titleControls
         anchors.right: parent.right
         anchors.rightMargin: Theme.space(4)
         anchors.verticalCenter: parent.verticalCenter
         spacing: Theme.space(2)
+
+        Button {
+          text: "⚙"
+          tooltipText: "Settings"
+          verticalPadding: Theme.space(2)
+          horizontalPadding: Theme.space(8)
+          selected: content.settingsMode
+          onClicked: {
+            content.historyMode = false
+            content.settingsMode = !content.settingsMode
+            content.forceActiveFocus()
+          }
+        }
 
         Button {
           text: "—"
