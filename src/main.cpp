@@ -5,6 +5,9 @@
 
 #include <QCommandLineOption>
 #include <QCommandLineParser>
+#include <QCoreApplication>
+#include <QDir>
+#include <QFontDatabase>
 #include <QGuiApplication>
 #include <QIcon>
 #include <QImage>
@@ -29,6 +32,38 @@ QString serverName()
 }
 
 } // namespace
+
+#ifdef Q_OS_WIN
+// Load the fonts shipped beside the executable. No system-wide font install is
+// needed, and uninstalling the app does not remove fonts the user already had.
+QString loadApplicationLocalFont()
+{
+    const QString appDir = QCoreApplication::applicationDirPath();
+    const QStringList regularCandidates = {
+        appDir + QStringLiteral("/JetBrainsMonoNerdFont-Regular.ttf"),
+        appDir + QStringLiteral("/fonts/JetBrainsMonoNerdFont-Regular.ttf"),
+    };
+    const QStringList boldCandidates = {
+        appDir + QStringLiteral("/JetBrainsMonoNerdFont-Bold.ttf"),
+        appDir + QStringLiteral("/fonts/JetBrainsMonoNerdFont-Bold.ttf"),
+    };
+
+    QString family;
+    for (const QString &path : regularCandidates) {
+        const int id = QFontDatabase::addApplicationFont(path);
+        if (id < 0)
+            continue;
+        const QStringList families = QFontDatabase::applicationFontFamilies(id);
+        if (!families.isEmpty()) {
+            family = families.first();
+            break;
+        }
+    }
+    for (const QString &path : boldCandidates)
+        QFontDatabase::addApplicationFont(path);
+    return family;
+}
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -76,6 +111,11 @@ int main(int argc, char *argv[])
     Config config;
     Store store;
     ThemeSource themeSource;
+#ifdef Q_OS_WIN
+    const QString appFont = loadApplicationLocalFont();
+    if (!appFont.isEmpty())
+        themeSource.setFontFamilyOverride(appFont);
+#endif
     const QString screenshotPath = parser.value(screenshotOption);
     AppHost host(parser.value(viewOption), !screenshotPath.isEmpty());
 

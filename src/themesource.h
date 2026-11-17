@@ -25,10 +25,18 @@ public:
     QString shellToml() const { return m_shellToml; }
     QString userShellToml() const { return m_userShellToml; }
     int cornerRadius() const { return m_cornerRadius; }
-    // The concrete family fontconfig resolves "monospace" to, so glyphs such
-    // as the gear and arrows come from the same font the shell uses.
+    // The concrete family resolves "monospace" on fontconfig systems, so glyphs
+    // such as the gear and arrows come from the same font the shell uses. On
+    // Windows the host installs an application-local family instead.
     QString fontFamily() const { return m_fontFamily; }
     bool omarchyTheme() const { return m_omarchyTheme; }
+
+    // Called before the QML engine loads a host-provided application font.
+    void setFontFamilyOverride(const QString &family)
+    {
+        if (!family.isEmpty())
+            m_fontFamily = family;
+    }
 
     Q_INVOKABLE void reload();
 

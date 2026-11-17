@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 
 project(rainlog-desktop
-  VERSION 0.1.0
+  VERSION 1.0.0
   DESCRIPTION "Rain Log desktop client"
   LANGUAGES CXX)
 
@@ -13,6 +13,13 @@ find_package(Qt6 6.5 REQUIRED COMPONENTS Core Gui Quick)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
+if(WIN32)
+  enable_language(RC)
+  set(RAINLOG_WINDOWS_RESOURCE packaging/windows/rainlog.rc)
+else()
+  set(RAINLOG_WINDOWS_RESOURCE)
+endif()
+
 qt_add_executable(rainlog
   src/main.cpp
   src/config.cpp
@@ -22,6 +29,7 @@ qt_add_executable(rainlog
   src/themesource.cpp
   src/themesource.h
   src/apphost.h
+  ${RAINLOG_WINDOWS_RESOURCE}
 )
 
 set_source_files_properties(shared/ui/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
@@ -54,20 +62,31 @@ set_target_properties(rainlog PROPERTIES
   WIN32_EXECUTABLE TRUE
 )
 
+if(WIN32)
+  # Let the resource compiler find the icon relative to the source root.
+  target_include_directories(rainlog PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
 include(GNUInstallDirs)
 
 install(TARGETS rainlog
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-install(FILES packaging/rainlog.desktop
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
-)
+if(WIN32)
+  install(FILES packaging/fonts/JetBrainsMonoNerdFont-Regular.ttf
+                packaging/fonts/JetBrainsMonoNerdFont-Bold.ttf
+                packaging/fonts/JetBrainsMono-OFL.txt
+    DESTINATION ${CMAKE_INSTALL_BINDIR})
+  install(FILES README.md LICENSE
+    DESTINATION ${CMAKE_INSTALL_BINDIR})
+else()
+  install(FILES packaging/rainlog.desktop
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
-install(FILES packaging/rainlog.svg
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps
-)
+  install(FILES packaging/rainlog.svg
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps)
 
-install(FILES LICENSE
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/rainlog
-)
+  install(FILES LICENSE
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/rainlog)
+endif()

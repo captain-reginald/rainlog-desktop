@@ -100,20 +100,36 @@ For the legacy `.conf` parser:
 windowrulev2 = float,class:^(rainlog)$
 ```
 
-## Build (Windows 10 x64)
+## Install (Windows 10 x64)
 
-Requires Qt 6.5+ for MSVC (tested against the current Qt 6), CMake, and Visual
-Studio 2022. From a Developer PowerShell:
+Rain Log targets Windows 10 or later, 64-bit only. The all-users installer:
+
+- installs under `C:\Program Files\Rain Log`,
+- requires administrator approval during setup,
+- installs the Microsoft Visual C++ runtime if it is missing,
+- creates Start Menu and public Desktop shortcuts,
+- registers Rain Log for removal in Apps & Features,
+- does **not** delete rainfall data or settings on uninstall.
+
+The current Windows builds are unsigned, so Windows SmartScreen may warn on
+first run. Do not bypass that warning unless the installer came from the
+official Rain Log release.
+
+The installer is produced by GitHub Actions. To build it manually, install
+Visual Studio 2022, CMake, NSIS, and Qt 6.8.3 for MSVC 2022 x64, then use the
+commands in `.github/workflows/windows-installer.yml`.
+
+A manual development build remains:
 
 ```powershell
 cmake -S . -B build -G "Visual Studio 17 2022" -A x64 `
-  -DCMAKE_PREFIX_PATH=C:\Qt\6.12.0\msvc2022_64
+  -DCMAKE_PREFIX_PATH=C:\Qt\6.8.3\msvc2022_64
 cmake --build build --config Release
 .\build\Release\rainlog.exe
 ```
 
-For a distributable folder, run `windeployqt` against the built executable.
-Windows packaging (bundled font, installer) is still in progress.
+The application ships JetBrains Mono Nerd Font beside the executable and loads
+it application-locally, so the installer does not modify the system font list.
 
 ## Development
 
