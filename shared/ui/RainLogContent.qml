@@ -33,7 +33,7 @@ Item {
   // Height the card wants for the view currently showing. The desktop host
   // uses this only for its initial window size, so a resized window stays
   // resized.
-  readonly property int naturalHeight: headerRow.implicitHeight + Theme.space(12)
+  readonly property int naturalHeight: headerBlock.implicitHeight + Theme.space(12)
     + contentColumn.implicitHeight + bottomPad + contentPadding * 2 + 4
 
   focus: true
@@ -167,35 +167,54 @@ Item {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: parent.top
-      height: headerRow.height
+      height: headerBlock.height
       onPressed: root.moveRequested()
     }
 
-    RowLayout {
-      id: headerRow
+    Column {
+      id: headerBlock
       width: parent.width
-      spacing: Theme.space(8)
+      height: implicitHeight
+      spacing: Theme.space(6)
 
-      Item { Layout.fillWidth: true }
-
-      Button {
-        text: "Edit History"
-        visible: !root.historyMode && !root.settingsMode
-        // Sit the label flush with the content edge.
-        horizontalPadding: 0
-        Layout.alignment: Qt.AlignVCenter
-        onClicked: {
-          root.settingsMode = false
-          root.historyMode = true
-        }
+      // The card's title sits under the host's window controls, in the space
+      // above the view action on the right.
+      Text {
+        textFormat: Text.PlainText
+        text: "Rain Log"
+        color: Theme.foreground
+        font.family: Theme.font.family
+        font.pixelSize: Theme.font.title
+        font.bold: true
+        width: parent.width
       }
 
-      Button {
-        text: "Back"
-        visible: root.historyMode
-        horizontalPadding: 0
-        Layout.alignment: Qt.AlignVCenter
-        onClicked: root.historyMode = false
+      RowLayout {
+        id: headerRow
+        width: parent.width
+        spacing: Theme.space(8)
+
+        Item { Layout.fillWidth: true }
+
+        Button {
+          text: "Edit History"
+          visible: !root.historyMode && !root.settingsMode
+          // Sit the label flush with the content edge.
+          horizontalPadding: 0
+          Layout.alignment: Qt.AlignVCenter
+          onClicked: {
+            root.settingsMode = false
+            root.historyMode = true
+          }
+        }
+
+        Button {
+          text: "Back"
+          visible: root.historyMode
+          horizontalPadding: 0
+          Layout.alignment: Qt.AlignVCenter
+          onClicked: root.historyMode = false
+        }
       }
     }
 
@@ -203,7 +222,7 @@ Item {
       id: flick
       anchors.left: parent.left
       anchors.right: parent.right
-      anchors.top: headerRow.bottom
+      anchors.top: headerBlock.bottom
       anchors.topMargin: Theme.space(12)
       anchors.bottom: parent.bottom
       contentWidth: width

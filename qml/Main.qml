@@ -2,9 +2,9 @@ import QtQuick
 import RainLog
 
 // Desktop host: a small frameless window whose body is the same card the
-// Omarchy plugin shows. The only host-specific chrome is a slim title strip
-// with the minimize/close pair above the card header, so the app keeps working
-// on GNOME, KDE, Cinnamon, and Windows, where a plugin cannot.
+// Omarchy plugin shows. The only host-specific chrome is a slim strip with
+// the settings and minimize/close controls above the card header, so the app
+// keeps working on GNOME, KDE, Cinnamon, and Windows, where a plugin cannot.
 Window {
   id: window
 
@@ -107,8 +107,9 @@ Window {
     border.width: 2
     border.color: Theme.popupsBorder
 
-    // A standard title strip: app name on the left, settings and window
-    // controls on the right. The empty part drags the window.
+    // Window controls sit above the card header, the way a regular title bar
+    // does. The empty part of the strip drags the window; the app name is in
+    // the card header below.
     Item {
       id: titleBar
       anchors.top: parent.top
@@ -117,35 +118,18 @@ Window {
       anchors.topMargin: 2
       anchors.leftMargin: 2
       anchors.rightMargin: 2
-      height: Math.max(32, titleControls.implicitHeight + Theme.space(10))
+      height: Math.max(26, titleControls.implicitHeight + Theme.space(4))
 
       MouseArea {
         anchors.fill: parent
         onPressed: window.startSystemMove()
       }
 
-      // The title sits a little lower than the window controls, with a little
-      // air above and to the left, so it reads as a title rather than a label
-      // pinned to the corner.
-      Text {
-        textFormat: Text.PlainText
-        text: "Rain Log"
-        color: Theme.foreground
-        font.family: Theme.font.family
-        font.pixelSize: Theme.font.title
-        font.bold: true
-        anchors.left: parent.left
-        anchors.leftMargin: Theme.space(18)
-        anchors.top: parent.top
-        anchors.topMargin: Theme.space(8)
-      }
-
       Row {
         id: titleControls
-        anchors.top: parent.top
-        anchors.topMargin: Theme.space(2)
         anchors.right: parent.right
         anchors.rightMargin: Theme.space(4)
+        anchors.verticalCenter: parent.verticalCenter
         spacing: Theme.space(2)
 
         Button {

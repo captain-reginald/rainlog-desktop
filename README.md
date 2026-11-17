@@ -21,9 +21,10 @@ desktops that are not Hyprland, and on Windows.
 - Follow the current Omarchy theme (colors, typography, spacing, corner
   radius). On non-Omarchy systems it falls back to the bundled palette.
 
-The window is frameless and sized like the plugin card. A slim title strip carries
-the app name, the settings gear, and minimize/close; the rest of the strip can be
-dragged. Closing saves and quits — there is no tray icon and no background process.
+The window is frameless and sized like the plugin card. A slim strip carries the
+settings gear and minimize/close and drags the window; the app name sits just
+below it, with the view action on the right. Closing saves and quits — there is
+no tray icon and no background process.
 
 ## Data
 
