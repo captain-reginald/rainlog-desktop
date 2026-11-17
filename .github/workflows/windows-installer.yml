@@ -79,6 +79,7 @@ jobs:
         run: |
           & "$env:QT_ROOT_DIR\bin\windeployqt.exe" `
             --release --no-compiler-runtime --dir "$PWD\deploy\bin" `
+            --qmldir "$PWD\qml" --qmldir "$PWD\shared" `
             "$PWD\deploy\bin\rainlog.exe"
 
       - name: Build NSIS installer

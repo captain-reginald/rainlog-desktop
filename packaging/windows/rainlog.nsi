@@ -23,6 +23,7 @@ OutFile "${OUTFILE}"
 InstallDir "$PROGRAMFILES64\Rain Log"
 InstallDirRegKey HKLM "Software\Rain Log" "Install_Dir"
 RequestExecutionLevel admin
+SetShellVarContext all
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -79,7 +80,7 @@ Section "Rain Log" SecMain
 
   CreateDirectory "$SMPROGRAMS\Rain Log"
   CreateShortCut "$SMPROGRAMS\Rain Log\Rain Log.lnk" "$INSTDIR\rainlog.exe" "" "$INSTDIR\rainlog.exe" 0
-  CreateShortCut "$COMMON_DESKTOP\Rain Log.lnk" "$INSTDIR\rainlog.exe" "" "$INSTDIR\rainlog.exe" 0
+  CreateShortCut "$DESKTOP\Rain Log.lnk" "$INSTDIR\rainlog.exe" "" "$INSTDIR\rainlog.exe" 0
 
   WriteRegStr HKLM "Software\Rain Log" "Install_Dir" "$INSTDIR"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Rain Log" "DisplayName" "Rain Log"
@@ -94,8 +95,9 @@ Section "Rain Log" SecMain
 SectionEnd
 
 Section "Uninstall"
+  SetShellVarContext all
   ; Do not remove user rainfall data or settings from Documents/%APPDATA%.
-  Delete "$COMMON_DESKTOP\Rain Log.lnk"
+  Delete "$DESKTOP\Rain Log.lnk"
   Delete "$SMPROGRAMS\Rain Log\Rain Log.lnk"
   RMDir "$SMPROGRAMS\Rain Log"
 
