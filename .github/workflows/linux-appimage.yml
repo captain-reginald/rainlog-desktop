@@ -60,7 +60,7 @@ jobs:
           host: linux
           target: desktop
           arch: ${{ env.QT_ARCH }}
-          modules: qtshadertools
+          modules: qtshadertools qtwayland
           cache: true
 
       - name: Build AppImage
