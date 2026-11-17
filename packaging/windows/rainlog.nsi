@@ -23,7 +23,6 @@ OutFile "${OUTFILE}"
 InstallDir "$PROGRAMFILES64\Rain Log"
 InstallDirRegKey HKLM "Software\Rain Log" "Install_Dir"
 RequestExecutionLevel admin
-SetShellVarContext all
 ShowInstDetails show
 ShowUnInstDetails show
 
@@ -50,6 +49,7 @@ VIAddVersionKey "LegalCopyright" "Copyright (c) 2026 Captain Reginald. Licensed 
 !insertmacro MUI_LANGUAGE "English"
 
 Function .onInit
+  SetShellVarContext all
   ${IfNot} ${RunningX64}
     MessageBox MB_ICONSTOP "Rain Log requires a 64-bit Windows installation."
     Abort
