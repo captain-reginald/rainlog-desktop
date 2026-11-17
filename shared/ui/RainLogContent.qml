@@ -5,11 +5,10 @@ import "../model/Model.js" as Model
 
 // The shared Rain Log card. Hosts supply:
 //   * Theme, Store and Config through the module's singletons,
-//   * optional `settingsExtra` content (the plugin injects its Bar section),
-//   * optional `headerTrailing` content (the desktop client injects its
-//     minimize/close buttons).
+//   * optional `settingsExtra` content (the plugin injects its Bar section).
 // Everything else — main page, rolling totals, calendar, history entry, data
-// path setting — is identical in every host.
+// path setting — is identical in every host. Desktop window chrome belongs to
+// the host, above this card.
 Item {
   id: root
 
@@ -18,7 +17,6 @@ Item {
   property bool editingCustom: false
   property int contentPadding: Theme.spacing.popupPadding
   property Component settingsExtra: null
-  property Component headerTrailing: null
 
   // Escape returns to the main page, then asks the host to dismiss itself.
   signal closeRequested()
@@ -219,13 +217,6 @@ Item {
         horizontalPadding: 0
         Layout.alignment: Qt.AlignVCenter
         onClicked: root.historyMode = false
-      }
-
-      Loader {
-        id: trailingLoader
-        visible: root.headerTrailing !== null
-        sourceComponent: root.headerTrailing
-        Layout.alignment: Qt.AlignVCenter
       }
     }
 

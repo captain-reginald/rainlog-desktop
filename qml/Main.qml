@@ -2,9 +2,9 @@ import QtQuick
 import RainLog
 
 // Desktop host: a small frameless window whose body is the same card the
-// Omarchy plugin shows. The only host-specific chrome is the minimize/close
-// pair in the header, so the app keeps working on GNOME, KDE, Cinnamon, and
-// Windows, where a plugin cannot.
+// Omarchy plugin shows. The only host-specific chrome is a slim title strip
+// with the minimize/close pair above the card header, so the app keeps working
+// on GNOME, KDE, Cinnamon, and Windows, where a plugin cannot.
 Window {
   id: window
 
@@ -21,10 +21,10 @@ Window {
   // size worth remembering; otherwise the card keeps fitting its content.
   // A saved height means the size already came from a resize.
   property bool userSized: Config.windowHeight > 0
-  readonly property int fittedHeight: Math.max(120, content.naturalHeight)
+  readonly property int fittedHeight: Math.max(120, titleBar.height + content.naturalHeight)
   height: !Host.screenshotMode && Config.windowHeight > 0
     ? Config.windowHeight
-    : (measured ? fittedHeight : 464)
+    : (measured ? fittedHeight : 490)
   minimumWidth: 400
   minimumHeight: 180
 
@@ -107,36 +107,57 @@ Window {
     border.width: 2
     border.color: Theme.popupsBorder
 
+    // Window controls sit above the card header, the way a regular title bar
+    // does. The empty part of the strip drags the window.
+    Item {
+      id: titleBar
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.topMargin: 2
+      anchors.leftMargin: 2
+      anchors.rightMargin: 2
+      height: Math.max(26, windowControls.implicitHeight + Theme.space(4))
+
+      MouseArea {
+        anchors.fill: parent
+        onPressed: window.startSystemMove()
+      }
+
+      Row {
+        id: windowControls
+        anchors.right: parent.right
+        anchors.rightMargin: Theme.space(4)
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: Theme.space(2)
+
+        Button {
+          text: "—"
+          tooltipText: "Minimize"
+          verticalPadding: Theme.space(2)
+          horizontalPadding: Theme.space(8)
+          onClicked: window.showMinimized()
+        }
+
+        Button {
+          text: "✕"
+          tooltipText: "Close"
+          verticalPadding: Theme.space(2)
+          horizontalPadding: Theme.space(8)
+          onClicked: window.close()
+        }
+      }
+    }
+
     RainLogContent {
       id: content
       anchors.fill: parent
-      anchors.margins: 2
+      anchors.topMargin: 2 + titleBar.height
+      anchors.leftMargin: 2
+      anchors.rightMargin: 2
+      anchors.bottomMargin: 2
       contentPadding: Theme.spacing.popupPadding
-      headerTrailing: trailingComponent
       onMoveRequested: window.startSystemMove()
-    }
-  }
-
-  // In-app window controls. Keeping them in the header (rather than a native
-  // titlebar) guarantees a minimize button on desktops whose decoration does
-  // not show one, and keeps the card's look intact.
-  Component {
-    id: trailingComponent
-
-    Row {
-      spacing: Theme.space(2)
-
-      Button {
-        text: "—"
-        tooltipText: "Minimize"
-        onClicked: window.showMinimized()
-      }
-
-      Button {
-        text: "✕"
-        tooltipText: "Close"
-        onClicked: window.close()
-      }
     }
   }
 
