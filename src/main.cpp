@@ -1,0 +1,129 @@
+#include "apphost.h"
+#include "config.h"
+#include "store.h"
+#include "themesource.h"
+
+#include <QCommandLineOption>
+#include <QCommandLineParser>
+#include <QGuiApplication>
+#include <QIcon>
+#include <QImage>
+#include <QLocalServer>
+#include <QLocalSocket>
+#include <QQmlApplicationEngine>
+#include <QQuickWindow>
+#include <QRegularExpression>
+#include <QTimer>
+
+namespace {
+
+// A stable, per-user socket name. Windows pipes have no filesystem path, so
+// the name itself has to be unique per account.
+QString serverName()
+{
+    QString user = qEnvironmentVariable("USER");
+    if (user.isEmpty())
+        user = qEnvironmentVariable("USERNAME", QStringLiteral("user"));
+    user.replace(QRegularExpression(QStringLiteral("[^A-Za-z0-9_.-]")), QStringLiteral("_"));
+    return QStringLiteral("rainlog-desktop-") + user;
+}
+
+} // namespace
+
+int main(int argc, char *argv[])
+{
+    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
+        Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
+
+    QGuiApplication app(argc, argv);
+    app.setApplicationName(QStringLiteral("rainlog"));
+    app.setApplicationDisplayName(QStringLiteral("Rain Log"));
+    app.setApplicationVersion(QStringLiteral(RAINLOG_VERSION));
+    app.setDesktopFileName(QStringLiteral("rainlog"));
+    app.setQuitOnLastWindowClosed(true);
+
+    QCommandLineParser parser;
+    parser.setApplicationDescription(QStringLiteral("Record daily rainfall and view rolling totals."));
+    parser.addHelpOption();
+    parser.addVersionOption();
+    const QCommandLineOption viewOption(
+        QStringLiteral("view"),
+        QStringLiteral("Start on a particular page: main, settings, or history."),
+        QStringLiteral("page"), QStringLiteral("main"));
+    const QCommandLineOption screenshotOption(
+        QStringLiteral("screenshot"),
+        QStringLiteral("Render one frame to a PNG and exit. Pair with "
+                       "QT_QPA_PLATFORM=offscreen for documentation shots."),
+        QStringLiteral("path"));
+    parser.addOption(viewOption);
+    parser.addOption(screenshotOption);
+    parser.process(app);
+
+    // One window per user session. A second launch asks the running instance
+    // to come forward and then exits, so double-clicking the launcher never
+    // stacks copies of the app.
+    const QString socketName = serverName();
+
+    QLocalSocket probe;
+    probe.connectToServer(socketName);
+    if (probe.waitForConnected(300)) {
+        probe.write("raise\n");
+        probe.flush();
+        probe.waitForBytesWritten(300);
+        return 0;
+    }
+
+    Config config;
+    Store store;
+    ThemeSource themeSource;
+    const QString screenshotPath = parser.value(screenshotOption);
+    AppHost host(parser.value(viewOption), !screenshotPath.isEmpty());
+
+    const QIcon icon = QIcon::fromTheme(QStringLiteral("rainlog"));
+    if (!icon.isNull())
+        app.setWindowIcon(icon);
+
+    QObject::connect(&config, &Config::dataPathChanged, &store,
+                     [&store, &config] { store.setDataPath(config.dataPath()); });
+    store.setDataPath(config.dataPath());
+
+    QLocalServer server;
+    QLocalServer::removeServer(socketName);
+    if (server.listen(socketName)) {
+        QObject::connect(&server, &QLocalServer::newConnection, &server, [&server, &host] {
+            while (QLocalSocket *connection = server.nextPendingConnection()) {
+                connection->readAll();
+                connection->disconnectFromServer();
+                connection->deleteLater();
+                host.notifyRaise();
+            }
+        });
+    }
+
+    qmlRegisterSingletonInstance("RainLog", 1, 0, "Config", &config);
+    qmlRegisterSingletonInstance("RainLog", 1, 0, "Store", &store);
+    qmlRegisterSingletonInstance("RainLog", 1, 0, "ThemeSource", &themeSource);
+    qmlRegisterSingletonInstance("RainLog", 1, 0, "Host", &host);
+
+    QQmlApplicationEngine engine;
+    QObject::connect(&engine, &QQmlApplicationEngine::warnings, [](const QList<QQmlError> &warnings) {
+        for (const QQmlError &warning : warnings)
+            qWarning().noquote() << warning.toString();
+    });
+    engine.loadFromModule("RainLog", "Main");
+    if (engine.rootObjects().isEmpty())
+        return 1;
+
+    // Documentation / regression helper: render one frame and quit. The caller
+    // supplies the platform plugin, so this also runs headless.
+    if (!screenshotPath.isEmpty()) {
+        if (auto *window = qobject_cast<QQuickWindow *>(engine.rootObjects().constFirst())) {
+            QTimer::singleShot(600, &app, [window, screenshotPath] {
+                window->grabWindow().save(screenshotPath);
+                QCoreApplication::quit();
+            });
+        }
+    }
+
+    return app.exec();
+}
