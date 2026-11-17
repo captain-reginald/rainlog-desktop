@@ -48,6 +48,23 @@ VIAddVersionKey "LegalCopyright" "Copyright (c) 2026 Captain Reginald. Licensed 
 
 !insertmacro MUI_LANGUAGE "English"
 
+Function EnsureAppClosed
+  ; The installer cannot overwrite the running application's DLLs. Ask the
+  ; user to close it before extracting anything, rather than starting an
+  ; install that fails midway through.
+  retry:
+    nsExec::ExecToStack /OEM '$SYSDIR\cmd.exe /c tasklist /FI "IMAGENAME eq rainlog.exe" /NH | findstr /I "rainlog.exe"'
+    Pop $0
+    Pop $1
+    ${If} $1 != ""
+        MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION "Rain Log is currently running.$\r$\n$\r$\nClose Rain Log, then choose OK to retry.$\r$\n$\r$\nChoose Cancel to stop the installation." IDOK retry IDCANCEL install_aborted
+    ${EndIf}
+  Return
+
+  install_aborted:
+    Abort
+FunctionEnd
+
 Function .onInit
   SetShellVarContext all
   ${IfNot} ${RunningX64}
@@ -58,6 +75,7 @@ Function .onInit
     MessageBox MB_ICONSTOP "Rain Log requires Windows 10 or later."
     Abort
   ${EndIf}
+  Call EnsureAppClosed
 FunctionEnd
 
 Section "Rain Log" SecMain
@@ -96,6 +114,7 @@ SectionEnd
 
 Section "Uninstall"
   SetShellVarContext all
+  Call EnsureAppClosed
   ; Do not remove user rainfall data or settings from Documents/%APPDATA%.
   Delete "$DESKTOP\Rain Log.lnk"
   Delete "$SMPROGRAMS\Rain Log\Rain Log.lnk"
