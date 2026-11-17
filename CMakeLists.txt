@@ -13,6 +13,8 @@ find_package(Qt6 6.5 REQUIRED COMPONENTS Core Gui Quick)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
+qt_add_resources(RAINLOG_ICON_SOURCES packaging/app_icon.qrc)
+
 if(WIN32)
   enable_language(RC)
   set(RAINLOG_WINDOWS_RESOURCE packaging/windows/rainlog.rc)
@@ -30,6 +32,7 @@ qt_add_executable(rainlog
   src/themesource.h
   src/apphost.h
   ${RAINLOG_WINDOWS_RESOURCE}
+  ${RAINLOG_ICON_SOURCES}
 )
 
 set_source_files_properties(shared/ui/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
@@ -50,11 +53,6 @@ qt_add_qml_module(rainlog
     shared/ui/PanelSectionHeader.qml
     shared/ui/Tooltip.qml
     shared/model/Model.js
-)
-
-qt_add_resources(rainlog app_icon
-  PREFIX "/icons"
-  FILES packaging/rainlog.ico
 )
 
 target_link_libraries(rainlog PRIVATE Qt6::Core Qt6::Gui Qt6::Quick)
