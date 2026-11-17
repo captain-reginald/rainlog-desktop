@@ -52,6 +52,11 @@ qt_add_qml_module(rainlog
     shared/model/Model.js
 )
 
+qt_add_resources(rainlog app_icon
+  PREFIX "/icons"
+  FILES packaging/rainlog.ico
+)
+
 target_link_libraries(rainlog PRIVATE Qt6::Core Qt6::Gui Qt6::Quick)
 
 target_compile_definitions(rainlog PRIVATE

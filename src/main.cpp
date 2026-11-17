@@ -119,9 +119,10 @@ int main(int argc, char *argv[])
     const QString screenshotPath = parser.value(screenshotOption);
     AppHost host(parser.value(viewOption), !screenshotPath.isEmpty());
 
-    const QIcon icon = QIcon::fromTheme(QStringLiteral("rainlog"));
-    if (!icon.isNull())
-        app.setWindowIcon(icon);
+    QIcon icon = QIcon::fromTheme(QStringLiteral("rainlog"));
+    if (icon.isNull())
+        icon = QIcon(QStringLiteral(":/icons/rainlog.ico"));
+    app.setWindowIcon(icon);
 
     QObject::connect(&config, &Config::dataPathChanged, &store,
                      [&store, &config] { store.setDataPath(config.dataPath()); });
