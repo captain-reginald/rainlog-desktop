@@ -48,6 +48,10 @@ if [[ -z "$QMAKE_BIN" ]]; then
     exit 1
   fi
 fi
+if [[ -n "${QT_ROOT_DIR:-}" ]]; then
+  export LD_LIBRARY_PATH="$QT_ROOT_DIR/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+fi
+
 export QMAKE="$QMAKE_BIN"
 export QML_SOURCES_PATHS="$ROOT/qml:$ROOT/shared"
 # linuxdeploy's bundled strip does not understand modern RELR ELF sections.
