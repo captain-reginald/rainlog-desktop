@@ -60,7 +60,7 @@ jobs:
           host: linux
           target: desktop
           arch: ${{ env.QT_ARCH }}
-          archives: qtbase qtdeclarative qtsvg qtwayland
+          archives: icu qtbase qtdeclarative qtsvg qtwayland
           modules: qtshadertools
           cache: true
 
