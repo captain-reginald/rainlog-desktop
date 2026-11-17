@@ -1,0 +1,80 @@
+name: Linux AppImage
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to package (without the leading v)
+        required: true
+        default: "1.0.0"
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: read
+
+env:
+  QT_VERSION: "6.8.3"
+  QT_ARCH: "linux_gcc_64"
+
+jobs:
+  build-appimage:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Resolve package version
+        shell: bash
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            version="${GITHUB_REF_NAME#v}"
+          else
+            version="${{ inputs.version }}"
+          fi
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          echo "Packaging Rain Log $version"
+
+      - name: Install build dependencies
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential cmake curl ca-certificates pkg-config \
+            libgl1-mesa-dev libxkbcommon-dev libfontconfig1-dev \
+            libfreetype6-dev libglib2.0-dev libx11-dev
+
+      - name: Cache AppImage tools
+        uses: actions/cache@v4
+        with:
+          path: build/appimage-tools
+          key: appimage-tools-linux-${{ env.QT_VERSION }}
+
+      - name: Install Qt
+        id: install-qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: linux
+          target: desktop
+          arch: ${{ env.QT_ARCH }}
+          modules: qtshadertools
+          cache: true
+
+      - name: Build AppImage
+        shell: bash
+        run: |
+          export CMAKE_PREFIX_PATH="$QT_ROOT_DIR"
+          export QMAKE="$QT_ROOT_DIR/bin/qmake"
+          packaging/linux/build-appimage.sh "$VERSION"
+
+      - name: Upload AppImage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RainLog-v${{ env.VERSION }}-linux-x86_64
+          path: |
+            RainLog-v${{ env.VERSION }}-linux-x86_64.AppImage
+            RainLog-v${{ env.VERSION }}-linux-x86_64.AppImage.sha256
+          if-no-files-found: error

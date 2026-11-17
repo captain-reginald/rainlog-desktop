@@ -85,6 +85,25 @@ Or install into your home directory:
 cmake --install build --prefix ~/.local
 ```
 
+### AppImage
+
+A self-contained Linux x86-64 AppImage is built by:
+
+```bash
+packaging/linux/build-appimage.sh 1.0.0
+```
+
+The script downloads `linuxdeploy` and its Qt plugin on first use, bundles Qt
+and the QML runtime, and writes:
+
+```text
+RainLog-v1.0.0-linux-x86_64.AppImage
+RainLog-v1.0.0-linux-x86_64.AppImage.sha256
+```
+
+The AppImage needs no installation and can be run from a downloads folder. It
+does not modify user configuration or rainfall data.
+
 ### Hyprland
 
 Hyprland tiles ordinary windows, so add a rule to keep Rain Log floating. In

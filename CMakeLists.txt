@@ -89,6 +89,10 @@ else()
 
   install(FILES packaging/rainlog.svg
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps)
+  install(FILES packaging/rainlog.png
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/512x512/apps)
+  install(FILES packaging/io.github.captainreginald.rainlog.metainfo.xml
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
 
   install(FILES LICENSE
     DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/rainlog)

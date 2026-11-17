@@ -16,3 +16,7 @@ compile_commands.json
 
 # Runtime noise
 *.log
+
+# AppImage artifacts
+*.AppImage
+*.AppImage.sha256
