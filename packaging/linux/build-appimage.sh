@@ -57,8 +57,28 @@ export QML_SOURCES_PATHS="$ROOT/qml:$ROOT/shared"
 # linuxdeploy's bundled strip does not understand modern RELR ELF sections.
 export NO_STRIP="${NO_STRIP:-1}"
 # Bundle native Wayland support as well as Linux's default XCB platform.
-export EXTRA_PLATFORM_PLUGINS="${EXTRA_PLATFORM_PLUGINS:-libqwayland.so}"
-export EXTRA_QT_MODULES="${EXTRA_QT_MODULES:-waylandcompositor}"
+# Qt names the 6.8 platform plugins differently on different repositories.
+if [[ -z "${EXTRA_PLATFORM_PLUGINS:-}" ]]; then
+  qt_plugins_dir=""
+  if [[ -n "${QT_ROOT_DIR:-}" ]]; then
+    qt_plugins_dir="$QT_ROOT_DIR/plugins/platforms"
+  elif command -v qmake6 >/dev/null; then
+    qt_plugins_dir="$(qmake6 -query QT_INSTALL_PLUGINS)/platforms"
+  elif command -v qmake >/dev/null; then
+    qt_plugins_dir="$(qmake -query QT_INSTALL_PLUGINS)/platforms"
+  fi
+  if [[ -f "$qt_plugins_dir/libqwayland.so" ]]; then
+    EXTRA_PLATFORM_PLUGINS="libqwayland.so"
+  elif [[ -f "$qt_plugins_dir/libqwayland-generic.so" && -f "$qt_plugins_dir/libqwayland-egl.so" ]]; then
+    EXTRA_PLATFORM_PLUGINS="libqwayland-generic.so;libqwayland-egl.so"
+  elif [[ -f "$qt_plugins_dir/libqwayland-generic.so" ]]; then
+    EXTRA_PLATFORM_PLUGINS="libqwayland-generic.so"
+  fi
+fi
+if [[ -n "${EXTRA_PLATFORM_PLUGINS:-}" ]]; then
+  export EXTRA_PLATFORM_PLUGINS
+fi
+export EXTRA_QT_MODULES="${EXTRA_QT_MODULES:-}"
 # Useful on CI machines without FUSE available.
 export APPIMAGE_EXTRACT_AND_RUN="${APPIMAGE_EXTRACT_AND_RUN:-1}"
 
