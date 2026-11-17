@@ -34,7 +34,7 @@ Item {
   // uses this only for its initial window size, so a resized window stays
   // resized.
   readonly property int naturalHeight: headerBlock.implicitHeight + Theme.space(12)
-    + contentColumn.implicitHeight + bottomPad + contentPadding * 2 + 4
+    + contentColumn.implicitHeight + bottomPad + contentPadding + 4
 
   focus: true
   Keys.onEscapePressed: {
@@ -158,7 +158,9 @@ Item {
   Item {
     id: inner
     anchors.fill: parent
-    anchors.margins: root.contentPadding
+    anchors.leftMargin: root.contentPadding
+    anchors.rightMargin: root.contentPadding
+    anchors.bottomMargin: root.contentPadding
 
     // The empty part of the header is the window's drag handle. Declared
     // before the row so the buttons stay clickable on top.
@@ -175,7 +177,14 @@ Item {
       id: headerBlock
       width: parent.width
       height: implicitHeight
-      spacing: Theme.space(6)
+      spacing: 0
+
+      // The title sits just under the control bar. Settings drops the small
+      // gap entirely so its title starts at the bar's own height.
+      Item {
+        width: 1
+        height: root.settingsMode ? 0 : Theme.space(3)
+      }
 
       // The card's title sits under the host's window controls, in the space
       // above the view action on the right.
@@ -184,9 +193,14 @@ Item {
         text: "Rain Log"
         color: Theme.foreground
         font.family: Theme.font.family
-        font.pixelSize: Theme.font.title
+        font.pixelSize: Theme.font.title + 2
         font.bold: true
         width: parent.width
+      }
+
+      Item {
+        width: 1
+        height: Theme.space(1)
       }
 
       RowLayout {

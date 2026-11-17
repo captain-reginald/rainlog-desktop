@@ -14,20 +14,28 @@ Window {
   color: Theme.cornerRadius > 0 ? "transparent" : Theme.popupsBackground
 
   width: Config.windowWidth
-  // A sensible first paint; then the card's measured height takes over until
-  // the user resizes the window, which breaks the binding and pins the size.
-  property bool measured: false
-  // Set when the user drags one of the resize edges. Only then is the window
-  // size worth remembering; otherwise the card keeps fitting its content.
-  // A saved height means the size already came from a resize.
+  // A sensible first paint; the window then follows the card's measured
+  // height through one coalesced update after the layout settles. A user
+  // resize pins the current height instead of fighting the measurement.
   property bool userSized: Config.windowHeight > 0
+  property int pinnedHeight: Config.windowHeight > 0 ? Config.windowHeight : 0
+  property int targetWindowHeight: 490
   readonly property int fittedHeight: Math.max(120, titleBar.height + content.naturalHeight)
+  readonly property bool autoFitAllowed: Host.screenshotMode
+    || (Config.windowHeight <= 0 && !window.userSized)
   height: !Host.screenshotMode && Config.windowHeight > 0
     ? Config.windowHeight
-    : (measured ? fittedHeight : 490)
+    : (window.userSized ? window.pinnedHeight : window.targetWindowHeight)
   minimumWidth: 400
   minimumHeight: 180
 
+  // Layouts only report their implicit heights after a polish pass and may do
+  // so more than once. Coalesce those updates and apply one final size.
+  function scheduleAutoFit() {
+    if (!window.autoFitAllowed)
+      return
+    autoFitTimer.restart()
+  }
   function syncTheme() {
     Theme.load(ThemeSource.colorsToml, ThemeSource.shellToml, ThemeSource.userShellToml)
     Theme.cornerRadius = ThemeSource.cornerRadius
@@ -41,16 +49,29 @@ Window {
     var view = Host.startupView
     if (view === "settings") content.settingsMode = true
     else if (view === "history") content.historyMode = true
+    window.scheduleAutoFit()
   }
 
-  // Layouts only report their implicit heights after a polish pass, so wait for
-  // the first real measurement before following the card's height.
   Connections {
     target: content
-    function onNaturalHeightChanged() {
-      if (!window.measured && content.naturalHeight > 100)
-        window.measured = true
+    function onNaturalHeightChanged() { window.scheduleAutoFit() }
+  }
+
+  Timer {
+    id: autoFitTimer
+    interval: 32
+    repeat: false
+    onTriggered: {
+      if (window.autoFitAllowed && window.targetWindowHeight !== window.fittedHeight) {
+        window.targetWindowHeight = window.fittedHeight
+        Host.requestWindowResize(window.width, window.fittedHeight)
+      }
     }
+  }
+
+  onHeightChanged: {
+    if (window.userSized && window.pinnedHeight !== window.height)
+      window.pinnedHeight = window.height
   }
 
   Timer {
@@ -182,7 +203,7 @@ Window {
     anchors.bottom: parent.bottom
     width: 5
     cursorShape: Qt.SizeHorCursor
-    onPressed: { window.userSized = true; window.startSystemResize(Qt.LeftEdge) }
+    onPressed: { window.userSized = true; window.pinnedHeight = window.height; window.startSystemResize(Qt.LeftEdge) }
   }
 
   MouseArea {
@@ -191,7 +212,7 @@ Window {
     anchors.bottom: parent.bottom
     width: 5
     cursorShape: Qt.SizeHorCursor
-    onPressed: { window.userSized = true; window.startSystemResize(Qt.RightEdge) }
+    onPressed: { window.userSized = true; window.pinnedHeight = window.height; window.startSystemResize(Qt.RightEdge) }
   }
 
   MouseArea {
@@ -200,7 +221,7 @@ Window {
     anchors.right: parent.right
     height: 5
     cursorShape: Qt.SizeVerCursor
-    onPressed: { window.userSized = true; window.startSystemResize(Qt.TopEdge) }
+    onPressed: { window.userSized = true; window.pinnedHeight = window.height; window.startSystemResize(Qt.TopEdge) }
   }
 
   MouseArea {
@@ -209,7 +230,7 @@ Window {
     anchors.right: parent.right
     height: 5
     cursorShape: Qt.SizeVerCursor
-    onPressed: { window.userSized = true; window.startSystemResize(Qt.BottomEdge) }
+    onPressed: { window.userSized = true; window.pinnedHeight = window.height; window.startSystemResize(Qt.BottomEdge) }
   }
 
   MouseArea {
@@ -218,7 +239,7 @@ Window {
     width: 8
     height: 8
     cursorShape: Qt.SizeFDiagCursor
-    onPressed: { window.userSized = true; window.startSystemResize(Qt.TopLeftCorner) }
+    onPressed: { window.userSized = true; window.pinnedHeight = window.height; window.startSystemResize(Qt.TopLeftCorner) }
   }
 
   MouseArea {
@@ -227,7 +248,7 @@ Window {
     width: 8
     height: 8
     cursorShape: Qt.SizeBDiagCursor
-    onPressed: { window.userSized = true; window.startSystemResize(Qt.TopRightCorner) }
+    onPressed: { window.userSized = true; window.pinnedHeight = window.height; window.startSystemResize(Qt.TopRightCorner) }
   }
 
   MouseArea {
@@ -236,7 +257,7 @@ Window {
     width: 8
     height: 8
     cursorShape: Qt.SizeBDiagCursor
-    onPressed: { window.userSized = true; window.startSystemResize(Qt.BottomLeftCorner) }
+    onPressed: { window.userSized = true; window.pinnedHeight = window.height; window.startSystemResize(Qt.BottomLeftCorner) }
   }
 
   MouseArea {
@@ -245,6 +266,6 @@ Window {
     width: 8
     height: 8
     cursorShape: Qt.SizeFDiagCursor
-    onPressed: { window.userSized = true; window.startSystemResize(Qt.BottomRightCorner) }
+    onPressed: { window.userSized = true; window.pinnedHeight = window.height; window.startSystemResize(Qt.BottomRightCorner) }
   }
 }
