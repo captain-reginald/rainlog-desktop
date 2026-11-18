@@ -11,7 +11,7 @@ Window {
   visible: true
   title: qsTr("Rain Log")
   flags: Qt.Window | Qt.FramelessWindowHint
-  color: Theme.cornerRadius > 0 ? "transparent" : Theme.popupsBackground
+  color: Theme.background
 
   width: Config.windowWidth
   // A sensible first paint; the window then follows the card's measured
@@ -120,9 +120,15 @@ Window {
     onActivated: window.close()
   }
 
+  // Floating mode already gets a normal tile size from the host window.
+  // In a regular tiled workspace, keep the application reading like the
+  // plugin card instead of stretching it across the tile. The remaining
+  // area stays opaque and inert.
   Rectangle {
     id: card
-    anchors.fill: parent
+    width: Math.min(440, parent.width)
+    height: Math.min(parent.height, window.fittedHeight)
+    anchors.centerIn: parent
     color: Theme.popupsBackground
     radius: Theme.cornerRadius
     border.width: 2
