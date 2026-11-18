@@ -2,11 +2,6 @@ name: Windows installer
 
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: Version to package (without the leading v)
-        required: true
-        default: "1.0.0"
   push:
     branches:
       - dev
@@ -31,11 +26,11 @@ jobs:
       - name: Resolve package version
         shell: pwsh
         run: |
-          if ("${{ github.event_name }}" -eq "push") {
-            $version = "${{ github.ref_name }}" -replace '^v', ''
-          } else {
-            $version = "${{ inputs.version }}"
+          $line = Get-Content CMakeLists.txt | Where-Object { $_ -match '^\s+VERSION\s+\d+\.\d+\.\d+' } | Select-Object -First 1
+          if (-not $line) {
+            throw "Could not resolve package version from CMakeLists.txt"
           }
+          $version = ($line -replace '^\s+VERSION\s+', '' -replace '\s+$', '')
           "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "Packaging Rain Log $version"
 
