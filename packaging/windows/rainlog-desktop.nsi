@@ -26,7 +26,6 @@ OutFile "${OUTFILE}"
 InstallDir "$PROGRAMFILES64\Rain Log Desktop"
 InstallDirRegKey HKLM "Software\Rain Log Desktop" "Install_Dir"
 RequestExecutionLevel admin
-SetShellVarContext all
 ShowInstDetails show
 ShowUnInstDetails show
 
