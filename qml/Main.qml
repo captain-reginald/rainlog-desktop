@@ -120,15 +120,19 @@ Window {
     onActivated: window.close()
   }
 
-  // Floating mode already gets a normal tile size from the host window.
-  // In a regular tiled workspace, keep the application reading like the
-  // plugin card instead of stretching it across the tile. The remaining
-  // area stays opaque and inert.
+  // In a regular tiled window, scale the whole card to the tile while
+  // preserving the plugin's aspect ratio. A floating window keeps scale 1.
+  property int designWidth: 440
+  readonly property real contentScale: Math.max(0.5,
+    Math.min(width / designWidth, height / fittedHeight))
+
   Rectangle {
     id: card
-    width: Math.min(440, parent.width)
-    height: Math.min(parent.height, window.fittedHeight)
+    width: window.designWidth
+    height: window.fittedHeight
     anchors.centerIn: parent
+    scale: window.contentScale
+    transformOrigin: Item.Center
     color: Theme.popupsBackground
     radius: Theme.cornerRadius
     border.width: 2
