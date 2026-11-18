@@ -8,8 +8,10 @@ on:
         required: true
         default: "1.0.0"
   push:
+    branches:
+      - dev
     tags:
-      - "v*.*.*"
+      - "v1.0.*"
 
 permissions:
   contents: read
