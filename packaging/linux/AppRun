@@ -1,9 +1,9 @@
 #!/bin/sh
-# Launch the installed Rain Log binary from inside an AppImage.
+# Launch the installed Rain Log Desktop binary from inside an AppImage.
 #
-# Do not make AppRun a symlink to usr/bin/rainlog: Qt resolves its runtime
-# paths from argv[0], and launching through the AppDir root can leave the
-# platform plugins undiscoverable. A tiny wrapper keeps the real binary's
+# Do not make AppRun a symlink to usr/bin/rainlog-desktop: Qt resolves its
+# runtime paths from argv[0], and launching through the AppDir root can leave
+# the platform plugins undiscoverable. A tiny wrapper keeps the real binary's
 # path conventional.
 set -eu
 
@@ -13,4 +13,4 @@ else
   appdir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 fi
 
-exec "$appdir/usr/bin/rainlog" "$@"
+exec "$appdir/usr/bin/rainlog-desktop" "$@"

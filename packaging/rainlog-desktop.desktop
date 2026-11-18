@@ -1,12 +1,12 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Rain Log
+Name=Rain Log Desktop
 GenericName=Rainfall Log
 Comment=Record daily rainfall and view rolling totals
-Exec=rainlog
-Icon=rainlog
+Exec=rainlog-desktop
+Icon=rainlog-desktop
 Terminal=false
 Categories=Utility;
 Keywords=rain;rainfall;weather;gauge;
-StartupWMClass=rainlog
+StartupWMClass=rainlog-desktop

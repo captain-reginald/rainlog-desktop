@@ -72,10 +72,10 @@ int main(int argc, char *argv[])
         Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 
     QGuiApplication app(argc, argv);
-    app.setApplicationName(QStringLiteral("rainlog"));
-    app.setApplicationDisplayName(QStringLiteral("Rain Log"));
+    app.setApplicationName(QStringLiteral("rainlog-desktop"));
+    app.setApplicationDisplayName(QStringLiteral("Rain Log Desktop"));
     app.setApplicationVersion(QStringLiteral(RAINLOG_VERSION));
-    app.setDesktopFileName(QStringLiteral("rainlog"));
+    app.setDesktopFileName(QStringLiteral("rainlog-desktop"));
     app.setQuitOnLastWindowClosed(true);
 
     QCommandLineParser parser;
@@ -139,9 +139,9 @@ int main(int argc, char *argv[])
     const QString screenshotPath = parser.value(screenshotOption);
     AppHost host(parser.value(viewOption), !screenshotPath.isEmpty());
 
-    QIcon icon = QIcon::fromTheme(QStringLiteral("rainlog"));
+    QIcon icon = QIcon::fromTheme(QStringLiteral("rainlog-desktop"));
     if (icon.isNull())
-        icon = QIcon(QStringLiteral(":/icons/rainlog.ico"));
+        icon = QIcon(QStringLiteral(":/icons/rainlog-desktop.ico"));
     app.setWindowIcon(icon);
 
     QObject::connect(&config, &Config::dataPathChanged, &store,

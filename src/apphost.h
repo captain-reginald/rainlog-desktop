@@ -48,7 +48,7 @@ public:
             return false;
 
         const QString command = QStringLiteral(
-            "hl.dsp.window.resize({ x = %1, y = %2, relative = false, window = \"class:rainlog\" })")
+            "hl.dsp.window.resize({ x = %1, y = %2, relative = false, window = \"class:rainlog-desktop\" })")
             .arg(width)
             .arg(height);
         return QProcess::startDetached(QStringLiteral("hyprctl"),

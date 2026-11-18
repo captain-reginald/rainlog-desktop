@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build a self-contained x86-64 AppImage for Rain Log.
+# Build a self-contained x86-64 AppImage for Rain Log Desktop.
 set -euo pipefail
 
 if [[ $# -ne 1 ]]; then
@@ -82,8 +82,16 @@ export EXTRA_QT_MODULES="${EXTRA_QT_MODULES:-waylandcompositor}"
 # Useful on CI machines without FUSE available.
 export APPIMAGE_EXTRACT_AND_RUN="${APPIMAGE_EXTRACT_AND_RUN:-1}"
 
+VERSION_BASE="${VERSION%%-*}"
+if [[ "$VERSION" == "$VERSION_BASE" ]]; then
+  RAINLOG_VERSION_SUFFIX=""
+else
+  RAINLOG_VERSION_SUFFIX="-${VERSION#"$VERSION_BASE"}"
+fi
+
 cmake -S "$ROOT" -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_PREFIX_PATH="${QT_ROOT_DIR:-${CMAKE_PREFIX_PATH:-}}" \
+  -DVERSION_SUFFIX="${RAINLOG_VERSION_SUFFIX}" \
   -DCMAKE_INSTALL_PREFIX=/usr
 cmake --build "$BUILD_DIR" --parallel "$(nproc)"
 cmake --install "$BUILD_DIR" --prefix "$APP_DIR/usr"
@@ -92,24 +100,24 @@ cmake --install "$BUILD_DIR" --prefix "$APP_DIR/usr"
   cd "$WORK_DIR"
   "$TOOLS_DIR/linuxdeploy-x86_64.AppImage" \
     --appdir "$APP_DIR" \
-    --executable "$APP_DIR/usr/bin/rainlog" \
-    --desktop-file "$ROOT/packaging/rainlog.desktop" \
-    --icon-file "$ROOT/packaging/rainlog.png" \
+    --executable "$APP_DIR/usr/bin/rainlog-desktop" \
+    --desktop-file "$ROOT/packaging/rainlog-desktop.desktop" \
+    --icon-file "$ROOT/packaging/rainlog-desktop.png" \
     --plugin qt \
     --custom-apprun "$ROOT/packaging/linux/AppRun"
 
   # appimagetool expects a PNG at the root when the desktop file uses
-  # Icon=rainlog. linuxdeploy otherwise chooses the installed SVG, which
-  # appimagetool does not accept as a .DirIcon source.
-  png_icon="$(find "$APP_DIR/usr/share/icons" -path '*/apps/rainlog.png' -type f -print -quit)"
-  cp "$png_icon" "$APP_DIR/rainlog.png"
+  # Icon=rainlog-desktop. linuxdeploy otherwise chooses the installed SVG,
+  # which appimagetool does not accept as a .DirIcon source.
+  png_icon="$(find "$APP_DIR/usr/share/icons" -path '*/apps/rainlog-desktop.png' -type f -print -quit)"
+  cp "$png_icon" "$APP_DIR/rainlog-desktop.png"
 
   "$TOOLS_DIR/linuxdeploy-x86_64.AppImage" \
     --appdir "$APP_DIR" \
     --output appimage
 
   generated="$(find "$WORK_DIR" -maxdepth 1 -type f -name '*.AppImage' -print -quit)"
-  out="$OUT_DIR/RainLog-v${VERSION}-linux-x86_64.AppImage"
+  out="$OUT_DIR/RainLog-Desktop-v${VERSION}-linux-x86_64.AppImage"
   rm -f "$out" "$out.sha256"
   mv "$generated" "$out"
   chmod 755 "$out"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
   <id>io.github.captainreginald.rainlog</id>
-  <name>Rain Log</name>
+  <name>Rain Log Desktop</name>
   <summary>Record rainfall and review precipitation totals</summary>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
@@ -10,13 +10,13 @@
   </developer>
   <url type="homepage">https://github.com/captain-reginald/rainlog-desktop</url>
   <url type="bugtracker">https://github.com/captain-reginald/rainlog-desktop/issues</url>
-  <launchable type="desktop-id">rainlog.desktop</launchable>
+  <launchable type="desktop-id">rainlog-desktop.desktop</launchable>
   <categories>
     <category>Utility</category>
     <category>Science</category>
   </categories>
   <description>
-    <p>Rain Log is a small companion to the Omarchy Rain Log plugin. It records daily rainfall in tenths of an inch, shows rolling totals for common windows, displays recent rainy days, and edits earlier entries from a calendar.</p>
+    <p>Rain Log Desktop is a companion to the Omarchy Rain Log plugin. It records daily rainfall in tenths of an inch, shows rolling totals for common windows, displays recent rainy days, and edits earlier entries from a calendar.</p>
     <p>It reads and writes the same JSON data file as the plugin, so either client can be used interchangeably.</p>
   </description>
   <releases>

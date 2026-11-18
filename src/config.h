@@ -7,8 +7,8 @@
 // User settings for the desktop client. Everything lives in a small JSON file
 // under the app config directory so the data store stays purely rainfall:
 //
-//   ~/.config/rainlog/config.json     (Linux)
-//   %APPDATA%/rainlog/config.json     (Windows)
+//   ~/.config/rainlog-desktop/config.json     (Linux)
+//   %APPDATA%/rainlog-desktop/config.json     (Windows)
 //
 // The data file itself is the same file the Omarchy plugin uses, which keeps
 // the folder sync-friendly across hosts.

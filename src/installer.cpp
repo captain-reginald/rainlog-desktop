@@ -26,7 +26,7 @@ QString appsDir()
 
 QString installedAppImage()
 {
-    return appsDir() + QStringLiteral("/RainLog.AppImage");
+    return appsDir() + QStringLiteral("/RainLog-Desktop.AppImage");
 }
 
 bool copyFile(const QString &from, const QString &to, QString *error)
@@ -78,16 +78,16 @@ bool runMenuInstall(bool uninstall, QString *error)
     const QString from = source.isEmpty() ? QCoreApplication::applicationFilePath() : source;
 
     const QString target = installedAppImage();
-    const QString desktopFile = genericData(QStringLiteral("applications/rainlog.desktop"));
-    const QString iconSvg = genericData(QStringLiteral("icons/hicolor/scalable/apps/rainlog.svg"));
-    const QString iconPng = genericData(QStringLiteral("icons/hicolor/256x256/apps/rainlog.png"));
+    const QString desktopFile = genericData(QStringLiteral("applications/rainlog-desktop.desktop"));
+    const QString iconSvg = genericData(QStringLiteral("icons/hicolor/scalable/apps/rainlog-desktop.svg"));
+    const QString iconPng = genericData(QStringLiteral("icons/hicolor/256x256/apps/rainlog-desktop.png"));
 
     if (uninstall) {
         QFile::remove(target);
         QFile::remove(desktopFile);
         QFile::remove(iconSvg);
         QFile::remove(iconPng);
-        qInfo() << "Uninstalled Rain Log";
+        qInfo() << "Uninstalled Rain Log Desktop";
         return true;
     }
 
@@ -116,26 +116,26 @@ bool runMenuInstall(bool uninstall, QString *error)
         "[Desktop Entry]\n"
         "Type=Application\n"
         "Version=1.0\n"
-        "Name=Rain Log\n"
+        "Name=Rain Log Desktop\n"
         "Comment=Record daily rainfall and view rolling totals\n"
         "Exec=%1\n"
-        "Icon=rainlog\n"
+        "Icon=rainlog-desktop\n"
         "Terminal=false\n"
         "Categories=Utility;\n"
         "Keywords=rain;rainfall;weather;gauge;\n"
-        "StartupWMClass=rainlog\n"
+        "StartupWMClass=rainlog-desktop\n"
     ).arg(quoteExec(target)).toUtf8();
     if (!writeFile(desktopFile, desktop, error))
         return false;
 
     QDir().mkpath(QFileInfo(iconSvg).absolutePath());
     QDir().mkpath(QFileInfo(iconPng).absolutePath());
-    if (!copyFile(QStringLiteral(":/icons/rainlog.svg"), iconSvg, error))
+    if (!copyFile(QStringLiteral(":/icons/rainlog-desktop.svg"), iconSvg, error))
         return false;
-    if (!copyFile(QStringLiteral(":/icons/rainlog.png"), iconPng, error))
+    if (!copyFile(QStringLiteral(":/icons/rainlog-desktop.png"), iconPng, error))
         return false;
 
-    qInfo() << "Installed Rain Log to" << target;
+    qInfo() << "Installed Rain Log Desktop to" << target;
     qInfo() << "Desktop entry written to" << desktopFile;
     return true;
 #endif

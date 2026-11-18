@@ -2,11 +2,11 @@
 
 #define IDI_ICON1 101
 
-IDI_ICON1 ICON "packaging/rainlog.ico"
+IDI_ICON1 ICON "packaging/rainlog-desktop.ico"
 
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION     1,0,0,0
-PRODUCTVERSION  1,0,0,0
+FILEVERSION     1,0,1,0
+PRODUCTVERSION  1,0,1,0
 FILEFLAGSMASK   0x3fL
 #ifdef _DEBUG
 FILEFLAGS       0x1L
@@ -22,13 +22,13 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName",      "Captain Reginald\0"
-            VALUE "FileDescription",  "Rain Log - Record daily rainfall\0"
-            VALUE "FileVersion",      "1.0.0.0\0"
-            VALUE "InternalName",     "rainlog\0"
+            VALUE "FileDescription",  "Rain Log Desktop - Record daily rainfall\0"
+            VALUE "FileVersion",      "1.0.1.0\0"
+            VALUE "InternalName",     "rainlog-desktop\0"
             VALUE "LegalCopyright",   "Copyright (c) 2026 Captain Reginald. Licensed under GPLv3\0"
-            VALUE "OriginalFilename", "rainlog.exe\0"
-            VALUE "ProductName",      "Rain Log\0"
-            VALUE "ProductVersion",   "1.0.0.0\0"
+            VALUE "OriginalFilename", "rainlog-desktop.exe\0"
+            VALUE "ProductName",      "Rain Log Desktop\0"
+            VALUE "ProductVersion",   "1.0.1.0\0"
         END
     END
     BLOCK "VarFileInfo"

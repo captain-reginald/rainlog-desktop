@@ -54,7 +54,7 @@ default resolves through the system Documents folder, which respects OneDrive
 redirection.
 
 App settings (window geometry, custom range) live separately in
-`~/.config/rainlog/config.json` on Linux and `%APPDATA%\rainlog\config.json`
+`~/.config/rainlog-desktop/config.json` on Linux and `%APPDATA%\rainlog-desktop\config.json`
 on Windows. They are deliberately kept out of the rainfall folder.
 
 ## Build (Linux)
@@ -70,7 +70,7 @@ Then:
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
-./build/rainlog
+./build/rainlog-desktop
 ```
 
 Install system-wide (binary, desktop entry, icon, license):
@@ -91,19 +91,19 @@ To make the downloaded AppImage show up in your application menu, add the
 `.desktop` entry and icon yourself — no extra dependencies are required:
 
 ```bash
-chmod +x RainLog-v1.0.0-linux-x86_64.AppImage
-./RainLog-v1.0.0-linux-x86_64.AppImage --install
+chmod +x RainLog-Desktop-v1.0.1-linux-x86_64.AppImage
+./RainLog-Desktop-v1.0.1-linux-x86_64.AppImage --install
 ```
 
-This copies the AppImage to `~/Applications/RainLog.AppImage`, writes
-`~/.local/share/applications/rainlog.desktop`, and installs the icon under
+This copies the AppImage to `~/Applications/RainLog-Desktop.AppImage`, writes
+`~/.local/share/applications/rainlog-desktop.desktop`, and installs the icon under
 `~/.local/share/icons/hicolor`. Menu entries should appear on the next menu
 refresh (or after logging in/out, depending on the desktop).
 
 To remove it:
 
 ```bash
-~/Applications/RainLog.AppImage --uninstall
+~/Applications/RainLog-Desktop.AppImage --uninstall
 ```
 
 Note that `--install` / `--uninstall` only work inside an AppImage, not in a
@@ -114,15 +114,15 @@ system-installed binary.
 A self-contained Linux x86-64 AppImage is built by:
 
 ```bash
-packaging/linux/build-appimage.sh 1.0.0
+packaging/linux/build-appimage.sh 1.0.1
 ```
 
 The script downloads `linuxdeploy` and its Qt plugin on first use, bundles Qt
 and the QML runtime, and writes:
 
 ```text
-RainLog-v1.0.0-linux-x86_64.AppImage
-RainLog-v1.0.0-linux-x86_64.AppImage.sha256
+RainLog-Desktop-v1.0.1-linux-x86_64.AppImage
+RainLog-Desktop-v1.0.1-linux-x86_64.AppImage.sha256
 ```
 
 The AppImage needs no installation and can be run from a downloads folder. It
@@ -130,33 +130,34 @@ does not modify user configuration or rainfall data.
 
 ### Hyprland
 
-Hyprland tiles ordinary windows, so add a rule to keep Rain Log floating. In
-Omarchy 4's Lua config (`~/.config/hypr/hyprland.lua`):
+Hyprland tiles ordinary windows, so add a rule to keep Rain Log Desktop
+floating. In Omarchy 4's Lua config (`~/.config/hypr/hyprland.lua`):
 
 ```lua
-hl.window_rule({ name = "rainlog", match = { class = "rainlog" }, float = true })
+hl.window_rule({ name = "rainlog-desktop", match = { class = "rainlog-desktop" }, float = true })
 ```
 
 For the legacy `.conf` parser:
 
 ```ini
-windowrulev2 = float,class:^(rainlog)$
+windowrulev2 = float,class:^(rainlog-desktop)$
 ```
 
 ## Install (Windows 10 x64)
 
-Rain Log targets Windows 10 or later, 64-bit only. The all-users installer:
+Rain Log Desktop targets Windows 10 or later, 64-bit only. The all-users
+installer:
 
-- installs under `C:\Program Files\Rain Log`,
+- installs under `C:\Program Files\Rain Log Desktop`,
 - requires administrator approval during setup,
 - installs the Microsoft Visual C++ runtime if it is missing,
 - creates Start Menu and public Desktop shortcuts,
-- registers Rain Log for removal in Apps & Features,
+- registers Rain Log Desktop for removal in Apps & Features,
 - does **not** delete rainfall data or settings on uninstall.
 
 The current Windows builds are unsigned, so Windows SmartScreen may warn on
 first run. Do not bypass that warning unless the installer came from the
-official Rain Log release.
+official Rain Log Desktop release.
 
 The installer is produced by GitHub Actions. To build it manually, install
 Visual Studio 2022, CMake, NSIS, and Qt 6.8.3 for MSVC 2022 x64, then use the
@@ -168,7 +169,7 @@ A manual development build remains:
 cmake -S . -B build -G "Visual Studio 17 2022" -A x64 `
   -DCMAKE_PREFIX_PATH=C:\Qt\6.8.3\msvc2022_64
 cmake --build build --config Release
-.\build\Release\rainlog.exe
+.\build\Release\rainlog-desktop.exe
 ```
 
 The application ships JetBrains Mono Nerd Font beside the executable and loads
@@ -179,9 +180,9 @@ it application-locally, so the installer does not modify the system font list.
 Render a page without a window manager, for documentation or visual checks:
 
 ```bash
-QT_QPA_PLATFORM=offscreen ./build/rainlog --screenshot docs/screenshot-main.png
-QT_QPA_PLATFORM=offscreen ./build/rainlog --view settings --screenshot docs/screenshot-settings.png
-QT_QPA_PLATFORM=offscreen ./build/rainlog --view history --screenshot docs/screenshot-history.png
+QT_QPA_PLATFORM=offscreen ./build/rainlog-desktop --screenshot docs/screenshot-main.png
+QT_QPA_PLATFORM=offscreen ./build/rainlog-desktop --view settings --screenshot docs/screenshot-settings.png
+QT_QPA_PLATFORM=offscreen ./build/rainlog-desktop --view history --screenshot docs/screenshot-history.png
 ```
 
 The shared layer lives in `shared/ui` (card UI, controls, theme parser) and
