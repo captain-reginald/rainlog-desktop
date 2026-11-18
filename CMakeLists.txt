@@ -24,6 +24,8 @@ endif()
 
 qt_add_executable(rainlog
   src/main.cpp
+  src/installer.cpp
+  src/installer.h
   src/config.cpp
   src/config.h
   src/store.cpp

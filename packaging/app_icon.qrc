@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/icons">
         <file alias="rainlog.ico">rainlog.ico</file>
+        <file alias="rainlog.svg">rainlog.svg</file>
+        <file alias="rainlog.png">rainlog.png</file>
     </qresource>
 </RCC>

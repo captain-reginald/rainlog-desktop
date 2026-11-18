@@ -85,6 +85,30 @@ Or install into your home directory:
 cmake --install build --prefix ~/.local
 ```
 
+### AppImage menu install
+
+To make the downloaded AppImage show up in your application menu, add the
+`.desktop` entry and icon yourself — no extra dependencies are required:
+
+```bash
+chmod +x RainLog-v1.0.0-linux-x86_64.AppImage
+./RainLog-v1.0.0-linux-x86_64.AppImage --install
+```
+
+This copies the AppImage to `~/Applications/RainLog.AppImage`, writes
+`~/.local/share/applications/rainlog.desktop`, and installs the icon under
+`~/.local/share/icons/hicolor`. Menu entries should appear on the next menu
+refresh (or after logging in/out, depending on the desktop).
+
+To remove it:
+
+```bash
+~/Applications/RainLog.AppImage --uninstall
+```
+
+Note that `--install` / `--uninstall` only work inside an AppImage, not in a
+system-installed binary.
+
 ### AppImage
 
 A self-contained Linux x86-64 AppImage is built by:

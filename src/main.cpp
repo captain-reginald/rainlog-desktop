@@ -1,5 +1,6 @@
 #include "apphost.h"
 #include "config.h"
+#include "installer.h"
 #include "store.h"
 #include "themesource.h"
 
@@ -90,9 +91,28 @@ int main(int argc, char *argv[])
         QStringLiteral("Render one frame to a PNG and exit. Pair with "
                        "QT_QPA_PLATFORM=offscreen for documentation shots."),
         QStringLiteral("path"));
+    const QCommandLineOption installOption(
+        QStringLiteral("install"),
+        QStringLiteral("Install Rain Log as a per-user application menu entry and exit."));
+    const QCommandLineOption uninstallOption(
+        QStringLiteral("uninstall"),
+        QStringLiteral("Remove the per-user application menu entry and installed copy, and exit."));
+    parser.addOption(installOption);
+    parser.addOption(uninstallOption);
+
     parser.addOption(viewOption);
     parser.addOption(screenshotOption);
     parser.process(app);
+
+    // A second launch should exit immediately instead of opening the GUI.
+    if (parser.isSet(installOption) || parser.isSet(uninstallOption)) {
+        QString error;
+        if (!runMenuInstall(parser.isSet(uninstallOption), &error)) {
+            qWarning().noquote() << error;
+            return 2;
+        }
+        return 0;
+    }
 
     // One window per user session. A second launch asks the running instance
     // to come forward and then exits, so double-clicking the launcher never
