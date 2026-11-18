@@ -13,19 +13,18 @@ Window {
   flags: Qt.Window | Qt.FramelessWindowHint
   color: Theme.background
 
-  width: Config.windowWidth
-  // A sensible first paint; the window then follows the card's measured
-  // height through one coalesced update after the layout settles. A user
-  // resize pins the current height instead of fighting the measurement.
+  // No width/height bindings here: a compositor-tiled window must be free
+  // to take the size it is given. Sizes are assigned imperatively in
+  // Component.onCompleted and again whenever auto-fit measures a new height.
+  // Once the compositor (or the user) sizes the window away from the
+  // configured width, auto-fit stops touching the chrome and lets the tile
+  // own the geometry.
   property bool userSized: Config.windowHeight > 0
   property int pinnedHeight: Config.windowHeight > 0 ? Config.windowHeight : 0
   property int targetWindowHeight: 490
   readonly property int fittedHeight: Math.max(120, titleBar.height + content.naturalHeight)
   readonly property bool autoFitAllowed: Host.screenshotMode
-    || (Config.windowHeight <= 0 && !window.userSized)
-  height: !Host.screenshotMode && Config.windowHeight > 0
-    ? Config.windowHeight
-    : (window.userSized ? window.pinnedHeight : window.targetWindowHeight)
+    || (Config.windowHeight <= 0 && !window.userSized && window.width === Config.windowWidth)
   minimumWidth: 400
   minimumHeight: 180
 
@@ -42,8 +41,19 @@ Window {
     Theme.fontFamilyOverride = ThemeSource.fontFamily
   }
 
+  // Spring the window into its initial size. Without this the window would
+  // start at whatever the toolkit picks. Imperative here (not bindings) so a
+  // compositor that tiles the window can resize it freely afterwards.
+  function applyInitialSize() {
+    window.width = Config.windowWidth
+    window.height = Config.windowHeight > 0 ? Config.windowHeight
+      : (window.userSized ? window.pinnedHeight : window.targetWindowHeight)
+  }
+
   Component.onCompleted: {
     syncTheme()
+
+    window.applyInitialSize()
 
     // A view can be forced for screenshots and manual checks.
     var view = Host.startupView
@@ -64,6 +74,7 @@ Window {
     onTriggered: {
       if (window.autoFitAllowed && window.targetWindowHeight !== window.fittedHeight) {
         window.targetWindowHeight = window.fittedHeight
+        window.height = window.fittedHeight
         Host.requestWindowResize(window.width, window.fittedHeight)
       }
     }
