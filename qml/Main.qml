@@ -131,19 +131,11 @@ Window {
     onActivated: window.close()
   }
 
-  // In a regular tiled window, scale the whole card to the tile while
-  // preserving the plugin's aspect ratio. A floating window keeps scale 1.
-  property int designWidth: 440
-  readonly property real contentScale: Math.max(0.5,
-    Math.min(width / designWidth, height / fittedHeight))
-
+  // The card IS the window. Filling it removes the empty desktop-colored
+  // surround that used to show behind the plugin-shaped card.
   Rectangle {
     id: card
-    width: window.designWidth
-    height: window.fittedHeight
-    anchors.centerIn: parent
-    scale: window.contentScale
-    transformOrigin: Item.Center
+    anchors.fill: parent
     color: Theme.popupsBackground
     radius: Theme.cornerRadius
     border.width: 2
