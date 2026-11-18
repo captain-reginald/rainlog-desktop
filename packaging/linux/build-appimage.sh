@@ -78,7 +78,7 @@ fi
 if [[ -n "${EXTRA_PLATFORM_PLUGINS:-}" ]]; then
   export EXTRA_PLATFORM_PLUGINS
 fi
-export EXTRA_QT_MODULES="${EXTRA_QT_MODULES:-}"
+export EXTRA_QT_MODULES="${EXTRA_QT_MODULES:-waylandcompositor}"
 # Useful on CI machines without FUSE available.
 export APPIMAGE_EXTRACT_AND_RUN="${APPIMAGE_EXTRACT_AND_RUN:-1}"
 
